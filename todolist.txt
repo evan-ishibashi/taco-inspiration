@@ -1,0 +1,9 @@
+Build Model with my own Labeled data
+
+Figure out GPU stuff
+    Have application actually configured with gpu backend.
+    Potentially see if this fixes video playback speed.
+
+Build Docker with all dependencies
+
+Eventually make a read me that's built out.
