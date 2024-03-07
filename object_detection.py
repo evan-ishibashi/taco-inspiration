@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-
+# Object Detection Class that is used for implementing YOLO (credit to Pysource: https://www.youtube.com/watch?v=GgGro5IV-cs&ab_channel=Pysource)
 class ObjectDetection:
     def __init__(self, weights_path="dnn_model/cfg_final.weights", cfg_path="dnn_model/yolov3_custom2.cfg"):
         print("Loading Object Detection")

@@ -8,9 +8,8 @@ import math
 obj_det = ObjectDetection()
 
 CLASSES = obj_det.load_class_names()
-print(CLASSES)
 
-video = cv.VideoCapture('videos/evan_shooting.mp4')
+video = cv.VideoCapture('videos/richard_freethrows.mp4')
 
 curr_frame_count = 0
 
@@ -21,14 +20,8 @@ last_made_shot_frame = 0
 last_shooting_frame = 0
 
 
-'''
-0 = person
-1 = backboard
-2 = net
-3 = basketball
-4 = shooting
-5 = made basket
-'''
+# Iterates through each frame of video until completion.
+# Handles Logic for Displaying and tracking basketball shots
 while True:
     ret, frame = video.read()
     curr_frame_count += 1
