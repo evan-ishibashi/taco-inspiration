@@ -10,11 +10,15 @@ obj_det = ObjectDetection()
 CLASSES = obj_det.load_class_names()
 print(CLASSES)
 
-video = cv.VideoCapture('videos/richard_freethrows.mp4')
+video = cv.VideoCapture('videos/evan_shooting.mp4')
 
+curr_frame_count = 0
 
+shot_attempts=0
+shot_makes=0
 
-frame_count = 0
+last_made_shot_frame = 0
+last_shooting_frame = 0
 
 
 '''
@@ -27,15 +31,23 @@ frame_count = 0
 '''
 while True:
     ret, frame = video.read()
-    frame_count += 1
+    curr_frame_count += 1
     if not ret:
         break
+
+    # Score Board
+    cv.rectangle(frame, (1525,50), (1875, 250), (0, 0, 0), -1)
+    cv.putText(frame, f"Shots Made: {shot_makes}", (1550, 100), cv.FONT_HERSHEY_TRIPLEX, 1.0, (255, 255, 255),2)
+    cv.putText(frame, f"Shot Attempts: {shot_attempts}", (1550, 150), cv.FONT_HERSHEY_TRIPLEX, 1.0, (255, 255, 255),2)
+    cv.putText(frame, f"Shooting %:", (1550, 200), cv.FONT_HERSHEY_TRIPLEX, 1.0, (255, 255, 255),2)
+
+    if shot_attempts > 0:
+        cv.putText(frame, f"{math.trunc((shot_makes/shot_attempts) * 100)}%", (1775, 200), cv.FONT_HERSHEY_TRIPLEX, 1.0, (255, 255, 255),2)
 
 
     # Detect Objects on frame
     (class_ids, scores, boxes) = obj_det.detect(frame)
-    print("scores", scores)
-    print("class ids", class_ids)
+
     for idx, id in enumerate(class_ids):
         (x,y,w,h) = boxes[idx]
         rounded = math.trunc(scores[idx]*100)
@@ -47,32 +59,39 @@ while True:
 
         # if backboard
         if id == 1:
-            cv.rectangle(frame, (x,y), (x + w, y+ h), (255, 255, 0), 2)
+            cv.rectangle(frame, (x,y), (x + w, y+ h), (0, 255, 0), 2)
             cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (0, 255, 0),2)
 
         # if net
         if id == 2:
-            cv.rectangle(frame, (x,y), (x + w, y+ h), (0, 255, 0), 2)
-            cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (0, 255, 0),2)
+            cv.rectangle(frame, (x,y), (x + w, y+ h), (255, 0, 0), 2)
+            cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (255, 0, 0),2)
 
         # if basketball
         if id == 3:
-            cv.rectangle(frame, (x,y), (x + w, y+ h), (255, 165, 0), 2)
-            cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (255, 165, 0),2)
+            if scores[idx] > 0.6:
+                cv.rectangle(frame, (x,y), (x + w, y+ h), (0, 165, 255), 2)
+                cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (0, 165, 255),2)
 
         # if shooting
         if id == 4:
             cv.rectangle(frame, (x,y), (x + w, y+ h), (255, 255, 0), 2)
             cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (0, 255, 0),2)
+            if curr_frame_count - last_shooting_frame > 30:
+                shot_attempts += 1
+            last_shooting_frame = curr_frame_count
 
         # if made basket
         if id == 5:
             cv.rectangle(frame, (x,y), (x + w, y+ h), (255, 255, 0), 2)
-            cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (0, 255, 0),2)
+            cv.putText(frame, f"{CLASSES[id]} {rounded}%", (x, y - 5), cv.FONT_HERSHEY_TRIPLEX, 1.0, (0, 0, 255),2)
+            if curr_frame_count - last_made_shot_frame > 60:
+                shot_makes += 1
+            last_made_shot_frame = curr_frame_count
 
     cv.imshow("frame", frame)
 
-    key = cv.waitKey(0)
+    key = cv.waitKey(1)
     if key == 27:
         break
 
