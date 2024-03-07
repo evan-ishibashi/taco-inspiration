@@ -2,6 +2,9 @@
 
 Personal Project for tracking the made and missed basketball shots
 
+[<img src="https://github.com/evan-ishibashi/taco-inspiration/assets/128192784/20f0f590-9bea-4196-b208-7cba9678a856">]([https://link-to-your-URL/](https://youtu.be/-kA7JVYl2MA))
+
+
 ## Steps Taken to build
 
 ### Collect and Process Data
